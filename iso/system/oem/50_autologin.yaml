@@ -1,0 +1,22 @@
+name: "Root autologin"
+stages:
+  initramfs:
+  - files:
+    - path: /etc/motd
+      content: |
+
+        Welcome to the Tangent installer. Write 'elemental install /dev/<device> --reboot' to install.
+         
+      permissions: 0644
+    - path: /etc/systemd/system/serial-getty@ttyS0.service.d/override.conf
+      content: |
+        [Service]
+        ExecStart=
+        ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM
+      permissions: 0644
+    - path: /etc/systemd/system/getty@tty1.service.d/override.conf
+      content: |
+        [Service]
+        ExecStart=
+        ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM
+      permissions: 0644

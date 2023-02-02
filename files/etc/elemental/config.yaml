@@ -1,0 +1,12 @@
+install:
+  grub-entry-name: Tangent
+
+  partitions:
+    persistent:
+      label: COS_PERSISTENT
+      fs: ext4
+      encryption:
+        name: persistent
+        key_slots:
+          - slot: 0
+            passphrase: asd123

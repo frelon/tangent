@@ -1,0 +1,19 @@
+iso:
+  grub-entry-name: "Install Tangent"
+
+  rootfs:
+    - docker:frallan/tangent-iso:v0.1.0
+  uefi:
+    - channel:live/grub2-efi-image
+  image:
+    - channel:live/grub2-efi-image
+    - channel:live/grub2
+    - dir:iso-boot/
+
+squash-no-compression: true
+name: tangent-x86_64
+
+repositories:
+  - uri: frallan/releases-teal
+    arch: "x86_64"
+    name: Elemental

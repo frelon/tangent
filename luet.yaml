@@ -1,0 +1,11 @@
+repositories:
+  - name: "Elemental"
+    description: "Elemental toolkit packages"
+    type: "docker"
+    enable: true
+    cached: true
+    priority: 1
+    reference: repository.yaml
+    verify: false
+    urls:
+      - "frallan/releases-teal"

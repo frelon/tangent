@@ -1,0 +1,4 @@
+stages:
+  fs:
+    - name: "Post-install settings"
+      hostname: "tangent"

@@ -1,0 +1,16 @@
+name: "Default user and motd"
+stages:
+  initramfs:
+  - files:
+    - path: /etc/motd
+      content: |
+
+        Welcome to Tangent! Have lots of fun!
+         
+      permissions: 0644
+    ensure_entities:
+    - path: /etc/shadow
+      entity: |
+        kind: "shadow"
+        username: "root"
+        password: "tangent"

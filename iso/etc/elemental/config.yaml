@@ -1,0 +1,15 @@
+install:
+  grub-entry-name: Tangent
+
+  system:
+    uri: docker:frallan/tangent:v0.1.0
+
+  # partitions:
+  #   persistent:
+  #     label: COS_PERSISTENT
+  #     fs: ext4
+  #     encryption:
+  #       name: persistent
+  #       key_slots:
+  #         - slot: 0
+  #           passphrase: asd123
