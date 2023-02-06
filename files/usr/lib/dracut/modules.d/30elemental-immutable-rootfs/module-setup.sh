@@ -28,8 +28,11 @@ install() {
 
     inst_multiple -o \
         "$systemdutildir"/systemd-fsck partprobe sync udevadm parted mkfs.ext2 mkfs.ext3 mkfs.ext4 mkfs.vfat mkfs.fat mkfs.xfs blkid e2fsck resize2fs mount xfs_growfs umount sgdisk elemental
+    inst_hook cmdline 30 "${moddir}/parse-cmdline.sh"
     inst_simple "${moddir}/elemental-immutable-rootfs.service" \
         "${systemdsystemunitdir}/elemental-immutable-rootfs.service"
+    inst_script "${moddir}/elemental-generator.sh" \
+        "${systemdutildir}/system-generators/dracut-elemental-generator"
     mkdir -p "${initdir}/${systemdsystemunitdir}/initrd-fs.target.requires"
     ln_r "../elemental-immutable-rootfs.service" \
         "${systemdsystemunitdir}/initrd-fs.target.requires/elemental-immutable-rootfs.service"
