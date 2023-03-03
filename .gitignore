@@ -1,7 +1,2 @@
-terraform.tfstate*
-.terraform
-*.img
-*.iso
-*.iso.sha256
-!Dockerfile.iso
+build/
 iso/usr/sbin/tangent-installer

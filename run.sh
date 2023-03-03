@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 VM_NAME=${1:-tangent-0}
-ISO_PATH=${2:-./tangent-x86_64.iso}
+ISO_PATH=${2:-./build/tangent-x86_64.iso}
 
 echo Deploying ${VM_NAME} using ${ISO_PATH}
 

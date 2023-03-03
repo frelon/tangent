@@ -4,11 +4,12 @@ VM_NAME ?= tangent-0
 
 .PHONY: build
 build:
+	mkdir -p build
 	docker build -t frallan/tangent:${VERSION}-iso -f Dockerfile.iso .
 	docker build -t frallan/tangent:${VERSION} .
 	docker push frallan/tangent:${VERSION}
-	rm iso/usr/sbin/tangent-installer && go build -o iso/usr/sbin/tangent-installer installer.go
-	sudo elemental build-iso --config-dir=./ frallan/tangent:${VERSION}-iso --local
+	rm -f iso/usr/sbin/tangent-installer && go build -o iso/usr/sbin/tangent-installer ./cmd/installer/installer.go
+	sudo elemental build-iso --output=build --config-dir=./ frallan/tangent:${VERSION}-iso --local
 
 .PHONY: down
 down:
