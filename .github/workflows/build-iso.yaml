@@ -20,4 +20,9 @@ jobs:
         uses: frelon/actions/elemental/build-iso@main
         with:
           system-uri: frallan/tangent:v0.1.0
-
+          output-dir: build
+      - name: Archive ISO
+        uses: actions/upload-artifact@v3
+        with:
+          name: tangent-x86_64
+          path: build/*
