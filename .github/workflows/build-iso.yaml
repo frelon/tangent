@@ -9,7 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: quay.io/costoolkit/elemental-cli:latest
     steps:
+      - name: Install tar
+        run: zypper install -y tar
       - name: Checkout code
         uses: actions/checkout@v3.1.0
       - name: Build ISO
