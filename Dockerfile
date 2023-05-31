@@ -1,6 +1,13 @@
 FROM frallan/elemental-cli:init AS elemental-cli
 FROM opensuse/tumbleweed as default
 
+RUN echo IMAGE_REPO=\"${REPO}\"         >> /etc/os-release && \
+    echo IMAGE_TAG=\"${VERSION}\"           >> /etc/os-release && \
+    echo IMAGE=\"${REPO}:${VERSION}\" >> /etc/os-release && \
+    echo TIMESTAMP="`date +'%Y%m%d%H%M%S'`" >> /etc/os-release && \
+    echo GRUB_ENTRY_NAME=\"Tangent\" >> /etc/os-release
+
+
 RUN zypper install -y grub2 grub2-i386-pc grub2-x86_64-efi grub2-x86_64-efi-extras shim dracut kernel kernel-firmware-all systemd \
                       bash syslinux lvm2 parted dosfstools e2fsprogs rsync util-linux-systemd coreutils \
                       squashfs NetworkManager device-mapper iproute2 tar curl ca-certificates ca-certificates-mozilla \

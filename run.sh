@@ -8,8 +8,7 @@ echo Deploying ${VM_NAME} using ${ISO_PATH}
 virt-install --name $VM_NAME --vcpus=4  --memory 6144 --cpu host \
   --os-variant=opensusetumbleweed \
   --virt-type kvm \
-  --boot loader=/usr/share/qemu/ovmf-x86_64-smm-ms.bin,loader.readonly=on,loader.secure=on,loader.type=pflash \
-  --features smm.state=on \
+  --boot loader=/usr/share/qemu/ovmf-x86_64.bin,loader.readonly=yes,loader.type=pflash,loader_secure=no \
   --disk path=/var/lib/libvirt/images/${VM_NAME}.img,bus=scsi,size=35,format=qcow2 \
   --check disk_size=off \
   --graphics none \

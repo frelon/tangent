@@ -2,7 +2,7 @@ install:
   grub-entry-name: Tangent
 
   system:
-    uri: docker:frallan/tangent:v0.1.0
+    uri: docker:ghcr.io/frelon/tangent:v0.1.0
 
   # partitions:
   #   persistent:
