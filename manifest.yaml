@@ -1,6 +1,0 @@
-iso:
-  grub-entry-name: "Install Tangent"
-  bootloader-in-rootfs: true
-
-squash-no-compression: true
-name: tangent-x86_64
