@@ -9,7 +9,6 @@ stages:
         PERSISTENT_STATE_PATHS: >-
           /etc/systemd
           /etc/ssh
-          /etc/iscsi 
           /home
           /opt
           /root
