@@ -48,6 +48,9 @@ COPY files/ /
 
 RUN echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/rootlogin.conf
 
+ARG REPO
+ARG VERSION
+
 RUN echo IMAGE_REPO=\"${REPO}\"         >> /etc/os-release && \
     echo IMAGE_TAG=\"${VERSION}\"           >> /etc/os-release && \
     echo IMAGE=\"${REPO}:${VERSION}\" >> /etc/os-release && \

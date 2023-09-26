@@ -17,9 +17,17 @@ build:
 	docker build --load --build-arg REPO=${REPO} --build-arg VERSION=${VERSION} -t ${REPO}:${VERSION} .
 	qemu-img create -f raw build/tangent.$(ARCH).img $(IMAGE_SIZE)
 	- losetup -f --show build/tangent.$(ARCH).img > .loop
-	$(DOCKER) run --rm --privileged --device=$$(cat .loop):$$(cat .loop) -v /var/run/docker.sock:/var/run/docker.sock \
+	$(DOCKER) run --rm --privileged --device=$$(cat .loop):$$(cat .loop) \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v $(PWD)/elemental:/etc/elemental \
 		--entrypoint=/bin/bash $(ELEMENTAL) -c "mount -t devtmpfs none /dev && \
-		elemental --debug install --firmware efi --system.uri $(REPO):$(VERSION) --local --disable-boot-entry --platform $(PLATFORM) $$(cat .loop)"
+			elemental --debug install \
+			--firmware efi \
+			--system.uri $(REPO):$(VERSION) \
+			--local \
+			--disable-boot-entry \
+			--platform $(PLATFORM) \
+			$$(cat .loop)"
 	losetup -d $$(cat .loop)
 	rm .loop
 	qemu-img convert -O qcow2 build/tangent.$(ARCH).img build/tangent.$(ARCH).qcow2
