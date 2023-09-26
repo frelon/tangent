@@ -19,6 +19,7 @@ TESTS_PATH=$(realpath -s "${SCRIPTS_PATH}/tests")
 : "${ELMNTL_TARGETARCH:=$(uname -p)}"
 : "${ELMNTL_MACHINETYPE:=q35}"
 : "${ELMNTL_CPU:=max}"
+: "${ELMNTL_DEBUG:=no}"
 
 function _abort {
     echo "$@" && exit 1
@@ -66,6 +67,8 @@ function start {
         _abort "Expected a *.qcow2 or *.iso file"
         ;;
   esac
+
+  [ "yes" == "${ELMNTL_DEBUG}" ] && serial_arg="-serial stdio" && daemon_arg=""
 
   [ "hvf" == "${ELMNTL_ACCEL}" ] && accel_arg="-accel ${ELMNTL_ACCEL}" && firmware_arg="-bios ${ELMNTL_FIRMWARE} ${firmware_arg}"
   [ "kvm" == "${ELMNTL_ACCEL}" ] && cpu_arg="-cpu host" && kvm_arg="-enable-kvm"
