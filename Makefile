@@ -3,7 +3,7 @@ ROOT_DIR  :=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VERSION   ?= $(shell git describe --candidates=50 --abbrev=0 --tags 2>/dev/null || echo "v0.1.0" )
 VM_NAME   ?= tangent-0
 REPO      ?= ghcr.io/frelon/tangent
-ELEMENTAL ?= ghcr.io/frelon/elemental-cli:overlay
+ELEMENTAL ?= ghcr.io/frelon/elemental-cli:mount
 DOCKER    ?= docker
 ARCH      ?= x86_64
 PLATFORM  ?= linux/$(ARCH)

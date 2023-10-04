@@ -14,3 +14,7 @@ stages:
         kind: "shadow"
         username: "root"
         password: "tangent"
+    users:
+      tangent:
+        name: tangent
+        passwd: tangent

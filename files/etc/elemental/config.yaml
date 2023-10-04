@@ -10,3 +10,8 @@ install:
         key_slots:
           - slot: 0
             passphrase: asd123
+
+# configuration used for the 'mount' command
+mount:
+  read-kernel-cmdline: true # read and parse /proc/cmdline for arguments
+  root: /sysroot

@@ -1,4 +1,4 @@
-FROM ghcr.io/rancher/elemental-toolkit/elemental-cli:latest AS elemental-cli
+FROM ghcr.io/frelon/elemental-cli:mount AS elemental-cli
 FROM opensuse/tumbleweed as default
 
 RUN ARCH=$(uname -m); \
@@ -40,6 +40,7 @@ RUN ARCH=$(uname -m); \
       cryptsetup \
       wget \
       jq \
+      lsof \
       sed
 
 COPY --from=elemental-cli /usr/bin/elemental /usr/bin/elemental
@@ -58,6 +59,6 @@ RUN echo IMAGE_REPO=\"${REPO}\"         >> /etc/os-release && \
     echo GRUB_ENTRY_NAME=\"Tangent\" >> /etc/os-release
 
 RUN systemctl enable NetworkManager
-RUN elemental init -f --debug
+RUN elemental init -f --debug elemental-rootfs,elemental-setup,grub-config,dracut-config,cloud-config-defaults,cloud-config-essentials
 
-COPY files/etc/cos/bootargs.cfg /etc/cos/bootargs.cfg
+COPY files/system /system

@@ -1,4 +1,8 @@
 stages:
   fs:
-    - name: "Post-install settings"
+    - if: '[ ! -f "/run/elemental/recovery_mode" ]'
+      name: "Post-install settings"
       hostname: "tangent"
+    - if: '[ -f "/run/elemental/recovery_mode" ]'
+      name: "Recovery settings"
+      hostname: "tangent-recovery"
