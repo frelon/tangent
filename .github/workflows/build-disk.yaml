@@ -30,3 +30,24 @@ jobs:
         with:
           name: tangent-x86_64.qcow2
           path: build/tangent-x86_64.qcow2
+  test:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Enable KVM group perms
+        run: |
+          sudo apt-get update
+          sudo apt-get install qemu qemu-utils ovmf qemu-system-x86
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/download-artifact@v4
+        with:
+          name: tangent-x86_64.qcow2
+          path: build/tangent-x86_64.qcow2
+      - name: Start machine
+        run: |
+          ls /usr/share/OVMF
