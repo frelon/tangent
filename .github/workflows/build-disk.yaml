@@ -1,0 +1,31 @@
+name: Build disk
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/rancher/elemental-toolkit/elemental-cli:v2.0.0
+    steps:
+      - name: Install tar
+        run: zypper install -y tar qemu-tools
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build disk
+        uses: frelon/actions/elemental/build-disk@main
+        with:
+          system: frallan/tangent:v0.1.0
+          output-dir: build
+          debug: true
+      - name: Convert to qcow2
+        run: qemu-img convert -O qcow2 build/tangent-x86_64.raw build/tangent-x86_64.qcow2
+      - name: Archive disk
+        uses: actions/upload-artifact@v3
+        with:
+          name: tangent-x86_64.qcow2
+          path: build/tangent-x86_64.qcow2

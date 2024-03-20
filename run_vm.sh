@@ -1,25 +1,28 @@
-#!/bin/bash
+##!/bin/bash
 
 set -e
 
 SCRIPT=$(realpath -s "${0}")
 SCRIPTS_PATH=$(dirname "${SCRIPT}")
-TESTS_PATH=$(realpath -s "${SCRIPTS_PATH}/tests")
+TESTS_PATH=$(realpath -s "${SCRIPTS_PATH}/../tests")
 
-: "${ELMNTL_FIRMWARE:=/usr/share/qemu/ovmf-x86_64.bin}"
+: "${ELMNTL_PREFIX:=}" 
+: "${ELMNTL_FIRMWARE:=/usr/share/qemu/ovmf-x86_64-smm-ms-code.bin}"
+: "${ELMNTL_FIRMWARE_ORIG_VARS:=/usr/share/qemu/ovmf-x86_64-smm-ms-vars.bin}"
+: "${ELMNTL_FIRMWARE_VARS:=${TESTS_PATH}/${ELMNTL_PREFIX}/ovmf-x86_64-vars.bin}"
 : "${ELMNTL_FWDIP:=127.0.0.1}"
 : "${ELMNTL_FWDPORT:=2222}"
 : "${ELMNTL_MEMORY:=4096}"
-: "${ELMNTL_LOGFILE:=${TESTS_PATH}/serial.log}"
-: "${ELMNTL_PIDFILE:=${TESTS_PATH}/testvm.pid}"
-: "${ELMNTL_TESTDISK:=${TESTS_PATH}/testdisk.qcow2}"
-: "${ELMNTL_DISKSIZE:=20G}"
+: "${ELMNTL_LOGFILE:=${TESTS_PATH}/${ELMNTL_PREFIX}serial.log}"
+: "${ELMNTL_PIDFILE:=${TESTS_PATH}/${ELMNTL_PREFIX}testvm.pid}"
+: "${ELMNTL_TESTDISK:=${TESTS_PATH}/${ELMNTL_PREFIX}testdisk.qcow2}"
+: "${ELMNTL_VMSTDOUT:=${TESTS_PATH}/${ELMNTL_PREFIX}vmstdout}"
+: "${ELMNTL_DISKSIZE:=16G}"
 : "${ELMNTL_DISPLAY:=none}"
 : "${ELMNTL_ACCEL:=kvm}"
 : "${ELMNTL_TARGETARCH:=$(uname -p)}"
 : "${ELMNTL_MACHINETYPE:=q35}"
 : "${ELMNTL_CPU:=max}"
-: "${ELMNTL_DEBUG:=no}"
 
 function _abort {
     echo "$@" && exit 1
@@ -30,19 +33,18 @@ function start {
   local usrnet_arg="-netdev user,id=user0,hostfwd=tcp:${ELMNTL_FWDIP}:${ELMNTL_FWDPORT}-:22 -device virtio-net-pci,romfile=,netdev=user0"
   local accel_arg
   local memory_arg="-m ${ELMNTL_MEMORY}"
-  local firmware_arg="-drive if=pflash,format=raw,readonly=on,file=${ELMNTL_FIRMWARE}"
-  local disk_arg="-hda ${ELMNTL_TESTDISK}"
+  local global_arg="-global driver=cfi.pflash01,property=secure,value=on"
+  local firmware_arg="-drive if=pflash,format=raw,unit=0,readonly=on,file=${ELMNTL_FIRMWARE}"
+  local firwmare_vars_arg="-drive if=pflash,format=raw,unit=1,file="${ELMNTL_FIRMWARE_VARS}""
+  local disk_arg="-drive file=${ELMNTL_TESTDISK},if=none,id=disk,format=qcow2,media=disk -device virtio-blk-pci,drive=disk,bootindex=1"
   local serial_arg="-serial file:${ELMNTL_LOGFILE}"
   local pidfile_arg="-pidfile ${ELMNTL_PIDFILE}"
   local display_arg="-display ${ELMNTL_DISPLAY}"
-  local daemon_arg="-daemonize"
-  local machine_arg="-machine type=${ELMNTL_MACHINETYPE}"
+  local machine_arg="-machine type=${ELMNTL_MACHINETYPE},smm=on"
   local cdrom_arg
-  local cpu_arg="-cpu ${ELMNTL_CPU}"
+  local cpu_arg
   local vmpid
   local kvm_arg
-
-  [ -f "${base_disk}" ] || _abort "Disk not found: ${base_disk}"
 
   if [ -f "${ELMNTL_PIDFILE}" ]; then
     vmpid=$(cat "${ELMNTL_PIDFILE}")
@@ -55,27 +57,32 @@ function start {
     fi
   fi
 
+  if [ ! -e "${ELMNTL_FIRMWARE_ARGS}" ]; then
+    echo Copy "${ELMNTL_FIRMWARE_ORIG_VARS}" to "${ELMNTL_FIRMWARE_VARS}"
+    cp "${ELMNTL_FIRMWARE_ORIG_VARS}" "${ELMNTL_FIRMWARE_VARS}"
+  fi
+
+  [ -f "${base_disk}" ] || _abort "Disk not found: ${base_disk}"
+
   case "${base_disk}" in
       *.qcow2)
         qemu-img create -f qcow2 -b "${base_disk}" -F qcow2 "${ELMNTL_TESTDISK}" > /dev/null
         ;;
       *.iso)
         qemu-img create -f qcow2 "${ELMNTL_TESTDISK}" "${ELMNTL_DISKSIZE}" > /dev/null
-        cdrom_arg="-cdrom ${base_disk}"
+        cdrom_arg="-drive file=${base_disk},readonly=on,if=none,id=cdrom,media=cdrom -device virtio-scsi-pci,id=scsi0 -device scsi-cd,bus=scsi0.0,drive=cdrom,bootindex=2"
         ;;
       *)
         _abort "Expected a *.qcow2 or *.iso file"
         ;;
   esac
 
-  [ "yes" == "${ELMNTL_DEBUG}" ] && serial_arg="-serial stdio" && daemon_arg=""
-
-  [ "hvf" == "${ELMNTL_ACCEL}" ] && accel_arg="-accel ${ELMNTL_ACCEL}" && firmware_arg="-bios ${ELMNTL_FIRMWARE} ${firmware_arg}"
+  [ "hvf" == "${ELMNTL_ACCEL}" ] && accel_arg="-accel ${ELMNTL_ACCEL}" && firmware_arg="-bios ${ELMNTL_FIRMWARE} ${firmware_arg}" && cpu_arg="-cpu max,-pdpe1gb"
   [ "kvm" == "${ELMNTL_ACCEL}" ] && cpu_arg="-cpu host" && kvm_arg="-enable-kvm"
 
-  qemu-system-${ELMNTL_TARGETARCH} ${kvm_arg} ${disk_arg} ${cdrom_arg} ${firmware_arg} ${usrnet_arg} \
-      ${kvm_arg} ${memory_arg} ${graphics_arg} ${serial_arg} ${pidfile_arg} \
-      ${daemon_arg} ${display_arg} ${machine_arg} ${accel_arg} ${cpu_arg}
+  qemu-system-${ELMNTL_TARGETARCH} ${kvm_arg} ${disk_arg} ${cdrom_arg} ${global_arg} ${firmware_arg} ${firwmare_vars_arg} \
+      ${usrnet_arg} ${kvm_arg} ${memory_arg} ${graphics_arg} -serial stdio ${pidfile_arg} \
+      ${display_arg} ${machine_arg} ${accel_arg} ${cpu_arg}
 }
 
 function stop {
@@ -99,6 +106,13 @@ function stop {
 function clean {
   ([ -f "${ELMNTL_LOGFILE}" ] && rm -f "${ELMNTL_LOGFILE}") || true
   ([ -f "${ELMNTL_TESTDISK}" ] && rm -f "${ELMNTL_TESTDISK}") || true
+  ([ -f "${ELMNTL_VMSTDOUT}" ] && rm -f "${ELMNTL_VMSTDOUT}") || true
+}
+
+function vmpid {
+    if [ -f "${ELMNTL_PIDFILE}" ]; then
+        cat "${ELMNTL_PIDFILE}"
+    fi
 }
 
 cmd=$1
@@ -113,6 +127,9 @@ case $cmd in
     ;;
   clean)
     clean
+    ;;
+  vmpid)
+    vmpid
     ;;
   *)
     _abort "Unknown command: ${cmd}"

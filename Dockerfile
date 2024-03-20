@@ -1,5 +1,7 @@
-FROM ghcr.io/frelon/elemental-cli:mount AS elemental-cli
-FROM opensuse/tumbleweed as default
+ARG ELEMENTAL_IMAGE
+FROM ${ELEMENTAL_IMAGE} AS elemental-cli
+
+FROM registry.opensuse.org/opensuse/tumbleweed:latest as default
 
 RUN ARCH=$(uname -m); \
     if [[ $ARCH == "aarch64" ]]; then ARCH="arm64"; fi; \
