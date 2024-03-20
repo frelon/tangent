@@ -4,14 +4,15 @@ FROM ${ELEMENTAL_IMAGE} AS elemental-cli
 FROM registry.opensuse.org/opensuse/tumbleweed:latest as default
 
 RUN ARCH=$(uname -m); \
-    if [[ $ARCH == "aarch64" ]]; then ARCH="arm64"; fi; \
-    zypper --non-interactive install --no-recommends -- \
+    zypper --non-interactive removerepo repo-update || true; \
+    [[ "${ARCH}" == "aarch64" ]] && ARCH="arm64"; \
+    zypper --non-interactive --gpg-auto-import-keys install --no-recommends -- \
       kernel-default \
       device-mapper \
       dracut \
+      shim \
       grub2 \
       grub2-${ARCH}-efi \
-      shim \
       haveged \
       systemd \
       NetworkManager \
@@ -30,26 +31,21 @@ RUN ARCH=$(uname -m); \
       lvm2 \
       tar \
       gzip \
-      neovim \
+      vim \
       which \
       less \
       sudo \
       curl \
-      ca-certificates \
-      ca-certificates-mozilla \
-      iproute2 \
-      iputils \
-      cryptsetup \
-      wget \
-      jq \
-      lsof \
-      sed
+      sed \
+      patch \
+      iproute2 && \
+    zypper clean --all
 
 COPY --from=elemental-cli /usr/bin/elemental /usr/bin/elemental
 
 COPY files/ /
 
-RUN echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/rootlogin.conf
+RUN mkdir -p /etc/ssh/sshd_config.d && echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/rootlogin.conf
 
 ARG REPO
 ARG VERSION
@@ -62,5 +58,3 @@ RUN echo IMAGE_REPO=\"${REPO}\"         >> /etc/os-release && \
 
 RUN systemctl enable NetworkManager
 RUN elemental init -f --debug
-
-COPY files/system /system
