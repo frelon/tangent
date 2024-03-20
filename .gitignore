@@ -1,2 +1,3 @@
-build/
+build
 iso/usr/sbin/tangent-installer
+tests

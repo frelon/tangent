@@ -61,6 +61,6 @@ RUN echo IMAGE_REPO=\"${REPO}\"         >> /etc/os-release && \
     echo GRUB_ENTRY_NAME=\"Tangent\" >> /etc/os-release
 
 RUN systemctl enable NetworkManager
-RUN elemental init -f --debug elemental-rootfs,elemental-setup,grub-config,dracut-config,cloud-config-defaults,cloud-config-essentials
+RUN elemental init -f --debug
 
 COPY files/system /system

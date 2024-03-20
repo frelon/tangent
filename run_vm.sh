@@ -2,14 +2,12 @@
 
 set -e
 
-SCRIPT=$(realpath -s "${0}")
-SCRIPTS_PATH=$(dirname "${SCRIPT}")
-TESTS_PATH=$(realpath -s "${SCRIPTS_PATH}/../tests")
+TESTS_PATH=$(realpath -s tests)
 
 : "${ELMNTL_PREFIX:=}" 
 : "${ELMNTL_FIRMWARE:=/usr/share/qemu/ovmf-x86_64-smm-ms-code.bin}"
 : "${ELMNTL_FIRMWARE_ORIG_VARS:=/usr/share/qemu/ovmf-x86_64-smm-ms-vars.bin}"
-: "${ELMNTL_FIRMWARE_VARS:=${TESTS_PATH}/${ELMNTL_PREFIX}/ovmf-x86_64-vars.bin}"
+: "${ELMNTL_FIRMWARE_VARS:=${TESTS_PATH}/${ELMNTL_PREFIX}ovmf-x86_64-vars.bin}"
 : "${ELMNTL_FWDIP:=127.0.0.1}"
 : "${ELMNTL_FWDPORT:=2222}"
 : "${ELMNTL_MEMORY:=4096}"

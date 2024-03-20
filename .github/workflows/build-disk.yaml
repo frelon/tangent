@@ -26,7 +26,7 @@ jobs:
       - name: Convert to qcow2
         run: qemu-img convert -O qcow2 build/tangent-x86_64.raw build/tangent-x86_64.qcow2
       - name: Archive disk
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tangent-x86_64.qcow2
           path: build/tangent-x86_64.qcow2

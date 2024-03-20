@@ -8,7 +8,7 @@ DOCKER    ?= docker
 ARCH      ?= x86_64
 PLATFORM  ?= linux/$(ARCH)
 IMAGE_SIZE?=20G
-QCOW2     ?=$(ROOT_DIR)/build/tangent.$(ARCH).qcow2
+QCOW2     ?=$(ROOT_DIR)/build/tangent-$(ARCH).qcow2
 
 .PHONY: build
 build:
