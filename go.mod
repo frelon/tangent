@@ -1,6 +1,6 @@
 module github.com/frelon/tangent
 
-go 1.20
+go 1.22
 
 require (
 	github.com/charmbracelet/bubbletea v0.23.2
@@ -23,10 +23,10 @@ require (
 	github.com/muesli/termenv v0.14.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/term v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/term v0.18.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
 )
