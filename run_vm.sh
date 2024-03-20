@@ -21,6 +21,7 @@ TESTS_PATH=$(realpath -s tests)
 : "${ELMNTL_TARGETARCH:=$(uname -p)}"
 : "${ELMNTL_MACHINETYPE:=q35}"
 : "${ELMNTL_CPU:=max}"
+: "${ELMNTL_DEBUG:=max}"
 
 function _abort {
     echo "$@" && exit 1
@@ -78,9 +79,15 @@ function start {
   [ "hvf" == "${ELMNTL_ACCEL}" ] && accel_arg="-accel ${ELMNTL_ACCEL}" && firmware_arg="-bios ${ELMNTL_FIRMWARE} ${firmware_arg}" && cpu_arg="-cpu max,-pdpe1gb"
   [ "kvm" == "${ELMNTL_ACCEL}" ] && cpu_arg="-cpu host" && kvm_arg="-enable-kvm"
 
-  qemu-system-${ELMNTL_TARGETARCH} ${kvm_arg} ${disk_arg} ${cdrom_arg} ${global_arg} ${firmware_arg} ${firwmare_vars_arg} \
-      ${usrnet_arg} ${kvm_arg} ${memory_arg} ${graphics_arg} -serial stdio ${pidfile_arg} \
-      ${display_arg} ${machine_arg} ${accel_arg} ${cpu_arg}
+    if [ "${ELMNTL_DEBUG}" == "yes" ]; then
+      qemu-system-${ELMNTL_TARGETARCH} ${kvm_arg} ${disk_arg} ${cdrom_arg} ${global_arg} ${firmware_arg} ${firwmare_vars_arg} \
+          ${usrnet_arg} ${kvm_arg} ${memory_arg} ${graphics_arg} -serial stdio ${pidfile_arg} \
+          ${display_arg} ${machine_arg} ${accel_arg} ${cpu_arg}
+  else 
+      qemu-system-${ELMNTL_TARGETARCH} ${kvm_arg} ${disk_arg} ${cdrom_arg} ${global_arg} ${firmware_arg} ${firwmare_vars_arg} \
+          ${usrnet_arg} ${kvm_arg} ${memory_arg} ${graphics_arg} ${serial_arg} ${pidfile_arg} \
+          ${display_arg} ${machine_arg} ${accel_arg} ${cpu_arg} > ${ELMNTL_VMSTDOUT} 2>&1 &
+  fi
 }
 
 function stop {
@@ -119,6 +126,9 @@ disk=$2
 case $cmd in
   start)
     start "${disk}"
+    ;;
+  debug)
+    ELMNTL_DEBUG=yes start "${disk}"
     ;;
   stop)
     stop

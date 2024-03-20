@@ -36,3 +36,10 @@ down:
 .PHONY: up
 up:
 	@./run_vm.sh start $(QCOW2)
+
+.PHONY: debug
+debug:
+	@./run_vm.sh debug $(QCOW2)
+
+
+
