@@ -31,6 +31,8 @@ jobs:
           name: tangent-x86_64.qcow2
           path: build/tangent-x86_64.qcow2
   test:
+    needs:
+      - build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
