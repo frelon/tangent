@@ -23,7 +23,7 @@ jobs:
           output-dir: build
           debug: true
       - name: Convert to qcow2
-        run: qemu-img convert -O qcow2 build/tangent-x86_64.raw build/tangent-x86_64.qcow2
+        run: ls build/ && qemu-img convert -O qcow2 build/tangent-x86_64.raw build/tangent-x86_64.qcow2
       - name: Archive disk
         uses: actions/upload-artifact@v3
         with:
