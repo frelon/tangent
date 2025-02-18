@@ -5,12 +5,12 @@ FROM registry.opensuse.org/opensuse/tumbleweed:latest as default
 
 RUN ARCH=$(uname -m); \
     if [[ $ARCH == "aarch64" ]]; then ARCH="arm64"; fi; \
-    zypper --non-interactive install --no-recommends -- \
+    zypper --non-interactive --gpg-auto-import-keys install --no-recommends -- \
       kernel-default \
       device-mapper \
       dracut \
-      grub2 \
-      grub2-${ARCH}-efi \
+      systemd-boot \
+      systemd-experimental \
       shim \
       haveged \
       systemd \
@@ -43,7 +43,14 @@ RUN ARCH=$(uname -m); \
       wget \
       jq \
       lsof \
-      sed
+      sed \
+      dialog \
+      pcr-oracle \
+      libtss2-tcti-device0 \
+      tpm2-0-tss
+
+RUN zypper --non-interactive addrepo -n unified --enable --refresh https://download.opensuse.org/repositories/home:vlefebvre:unified/openSUSE_Tumbleweed/home:vlefebvre:unified.repo && \
+    zypper --non-interactive --gpg-auto-import-keys install --repo unified uki sdbootutil
 
 COPY --from=elemental-cli /usr/bin/elemental /usr/bin/elemental
 
