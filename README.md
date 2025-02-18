@@ -1,3 +1,3 @@
 # Tangent
 
-A small Linux derivative built using [Elemental](https://github.com/rancher/elemental-cli).
+A small Linux derivative built using [Elemental Toolkit](https://github.com/rancher/elemental-toolkit).
